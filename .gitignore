@@ -19,3 +19,9 @@ doc/api/
 *.js_
 *.js.deps
 *.js.map
+
+# VScode
+.vscode/
+
+# Flutter auto generated files
+.flutter-plugins*
