@@ -13,6 +13,32 @@ class ByteBankApp extends StatelessWidget {
   }
 }
 
+class Editor extends StatelessWidget {
+  final TextEditingController controller;
+  final String hint;
+  final IconData icon;
+  final String label;
+
+  Editor({this.controller, this.label, this.hint, this.icon});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: TextField(
+        controller: controller,
+        style: TextStyle(fontSize: 24.0),
+        decoration: InputDecoration(
+          icon: icon != null ? Icon(icon) : null,
+          labelText: label,
+          hintText: hint,
+        ),
+        keyboardType: TextInputType.number,
+      ),
+    );
+  }
+}
+
 class TransferList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -66,53 +92,40 @@ class TransferForm extends StatelessWidget {
   final TextEditingController _controllerFieldAccountNumber =
       TextEditingController();
   final TextEditingController _controllerFieldValue = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Create transfer')),
       body: Column(
         children: <Widget>[
-          Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: TextField(
-                controller: _controllerFieldAccountNumber,
-                style: TextStyle(fontSize: 24.0),
-                decoration: InputDecoration(
-                    labelText: 'Account number', hintText: '0000'),
-                keyboardType: TextInputType.number,
-              )),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: TextField(
-              controller: _controllerFieldValue,
-              style: TextStyle(fontSize: 24.0),
-              decoration: InputDecoration(
-                  icon: Icon(Icons.monetization_on),
-                  labelText: 'Value',
-                  hintText: '0.00'),
-              keyboardType: TextInputType.number,
-            ),
+          Editor(
+            controller: _controllerFieldAccountNumber,
+            label: 'Account Number',
+            hint: '0000',
+          ),
+          Editor(
+            controller: _controllerFieldValue,
+            label: 'Value',
+            hint: '0.00',
+            icon: Icons.monetization_on,
           ),
           ElevatedButton(
             child: Text('Confirm'),
-            onPressed: () {
-              final int accountNumber =
-                  int.tryParse(_controllerFieldAccountNumber.text);
-              final double value = double.tryParse(_controllerFieldValue.text);
-
-              if (accountNumber != null && value != null) {
-                final createdTransfer = Transfer(value, accountNumber);
-                debugPrint('$createdTransfer');
-                Scaffold.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('$createdTransfer'),
-                  ),
-                );
-              }
-            },
+            onPressed: () => _createTransfer(),
           )
         ],
       ),
     );
+  }
+
+  void _createTransfer() {
+    final int accountNumber = int.tryParse(_controllerFieldAccountNumber.text);
+    final double value = double.tryParse(_controllerFieldValue.text);
+
+    if (accountNumber != null && value != null) {
+      final createdTransfer = Transfer(value, accountNumber);
+      debugPrint('$createdTransfer');
+    }
   }
 }
